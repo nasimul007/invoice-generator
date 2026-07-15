@@ -698,7 +698,7 @@ function downloadPDF() {
   const { jsPDF } = window.jspdf;
 
   html2canvas(element, {
-    scale: 2,
+    scale: 3,
     useCORS: true,
     logging: false
   }).then(canvas => {
