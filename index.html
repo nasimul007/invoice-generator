@@ -170,7 +170,7 @@ input:focus, select:focus { outline: none; border-color: #2c3e50; }
   letter-spacing: 0.5px;
 }
 .items-table td {
-  padding: 8px;
+  padding: 2px;
   border-bottom: 1px solid #edf2f7;
   font-size: 8.5pt;
 }
@@ -498,8 +498,8 @@ input:focus, select:focus { outline: none; border-color: #2c3e50; }
           <thead>
             <tr>
               <th style="width:5%;" class="text-center">#</th>
-              <th style="width:35%;">Description</th>
-              <th style="width:12%;" class="text-right">Qty</th>
+              <th style="width:39%;">Description</th>
+              <th style="width:8%;" class="text-right">Qty</th>
               <th style="width:15%;" class="text-right">Price</th>
               <th style="width:15%;" class="text-right">Discount</th>
               <th style="width:18%;" class="text-right">Subtotal</th>
@@ -530,13 +530,14 @@ input:focus, select:focus { outline: none; border-color: #2c3e50; }
           </div>
         </div>
 
-        <!-- Terms & Conditions -->
+        <!-- Warranty Policy -->
         <div class="terms-section">
-          <h3>Terms &amp; Conditions</h3>
+          <h3>Terms & Conditions</h3>
           <ol class="terms-list">
-            <li><strong>Return Policy:</strong> Items can be returned within 14 days of delivery in original condition.</li>
-            <li><strong>Payment Terms:</strong> Payment is due upon receipt of invoice. Late payments may incur additional charges.</li>
-            <li><strong>Shipping:</strong> Delivery times are estimates. We are not liable for delays caused by courier services.</li>
+            <li><strong>Coverage:</strong> Covers manufacturing defects &amp; hardware malfunctions under normal use — including non-functional adapters/cables, audio or charging issues, defective ports/buttons, and devices not powering on.</li>
+            <li><strong>Warranty Period:</strong> Varies by product; begins on the purchase date shown on your invoice. Check the product listing or contact us for specific durations.</li>
+            <li><strong>Exclusions:</strong> Does not cover physical damage, water/moisture damage, burns/rust/corrosion, unauthorized repairs, tampering, misuse, improper voltage, or lost/stolen products.</li>
+            <li><strong>How to Claim:</strong> Contact support with your name, order number, issue description, and photos/videos. Send or bring the product to our office. Inspection takes up to 3 working days; approved claims receive a free replacement. Invoice and original box with InvasionTec sticker are mandatory.</li>
           </ol>
         </div>
 
@@ -701,14 +702,14 @@ function downloadPDF() {
     useCORS: true,
     logging: false
   }).then(canvas => {
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pdfW = pdf.internal.pageSize.getWidth();
     const pdfH = pdf.internal.pageSize.getHeight();
     const ratio = pdfW / canvas.width;
     const ch = canvas.height * ratio;
     if (ch <= pdfH) {
-      pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, ch);
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfW, ch);
     } else {
       const pageH = pdfH / ratio;
       let totalH = canvas.height;
@@ -722,9 +723,9 @@ function downloadPDF() {
         c2.height = h;
         const ctx = c2.getContext('2d');
         ctx.drawImage(canvas, 0, srcY, canvas.width, h, 0, 0, canvas.width, h);
-        const d = c2.toDataURL('image/jpeg', 0.95);
+        const d = c2.toDataURL('image/png');
         const ph = (h / canvas.width) * pdfW;
-        pdf.addImage(d, 'JPEG', 0, 0, pdfW, ph);
+        pdf.addImage(d, 'PNG', 0, 0, pdfW, ph);
         srcY += h;
         page++;
       }
