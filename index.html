@@ -4,8 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Invoice Generator</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -265,7 +264,18 @@ input:focus, select:focus { outline: none; border-color: #2c3e50; }
   page-break-inside: avoid;
 }
 
-@media (max-width: 900px) {
+@media print {
+  body { background: none; padding: 0; }
+  .container > h1,
+  .form-panel { display: none; }
+  .preview-panel { position: static; }
+  #invoice-preview {
+    box-shadow: none;
+    padding: 0;
+  }
+}
+
+@media screen and (max-width: 900px) {
   .main-layout { flex-direction: column; }
   .preview-panel { position: static; }
   .form-row { flex-direction: column; }
@@ -694,46 +704,14 @@ function removeItem(btn) {
 
 function downloadPDF() {
   const invNum = getInvNum();
-  const element = document.getElementById('invoice-preview');
-  const { jsPDF } = window.jspdf;
-
-  html2canvas(element, {
-    scale: 3,
-    useCORS: true,
-    logging: false
-  }).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfW = pdf.internal.pageSize.getWidth();
-    const pdfH = pdf.internal.pageSize.getHeight();
-    const ratio = pdfW / canvas.width;
-    const ch = canvas.height * ratio;
-    if (ch <= pdfH) {
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfW, ch);
-    } else {
-      const pageH = pdfH / ratio;
-      let totalH = canvas.height;
-      let srcY = 0;
-      let page = 0;
-      while (srcY < totalH) {
-        if (page > 0) pdf.addPage();
-        const h = Math.min(pageH, totalH - srcY);
-        const c2 = document.createElement('canvas');
-        c2.width = canvas.width;
-        c2.height = h;
-        const ctx = c2.getContext('2d');
-        ctx.drawImage(canvas, 0, srcY, canvas.width, h, 0, 0, canvas.width, h);
-        const d = c2.toDataURL('image/png');
-        const ph = (h / canvas.width) * pdfW;
-        pdf.addImage(d, 'PNG', 0, 0, pdfW, ph);
-        srcY += h;
-        page++;
-      }
-    }
-    pdf.save(`invoice-${invNum}.pdf`);
+  const origTitle = document.title;
+  document.title = `invoice-${invNum}`;
+  window.addEventListener('afterprint', () => {
+    document.title = origTitle;
     invCounter++;
     localStorage.setItem('invCounter', invCounter);
-  });
+  }, { once: true });
+  window.print();
 }
 
 document.getElementById('preview-date').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
